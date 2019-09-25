@@ -122,8 +122,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Sounds\wrong.wav" />
     <Resource Include="Images\logo.png" />
-    <Content Include="Sounds\theme.wav" />
+    <Content Include="Sounds\hot-theme.wav" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wheel of Azure\Wheel of Azure.csproj">

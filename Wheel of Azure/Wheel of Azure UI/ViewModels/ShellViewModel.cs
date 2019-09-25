@@ -14,7 +14,7 @@ namespace Wheel_of_Azure_UI.ViewModels
         public ShellViewModel()
         {
             player =
-                new System.Media.SoundPlayer(@"C:\Users\v-deree\Projects\azureRefactor\Wheel of Azure\Wheel of Azure UI\Sounds\theme.wav");
+                new System.Media.SoundPlayer(@"C:\Users\v-deree\Projects\azureRefactor\Wheel of Azure\Wheel of Azure UI\Sounds\hot-theme.wav");
             player.Play();
         }
 

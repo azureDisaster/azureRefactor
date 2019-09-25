@@ -5,13 +5,18 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Wheel_of_Azure;
 
 namespace Wheel_of_Azure_UI.ViewModels
 {
     public class GameViewModel: Screen
     {
-        PhraseBoard myBoard = new PhraseBoard("hello");
+        PhraseBoard myBoard = new PhraseBoard("leap");
+        Player playerOne;
+        Wheel wheel = new Wheel();
+        int wheelAmount;
+        System.Media.SoundPlayer wrongSound;
 
         private string _phraseText;
 
@@ -30,21 +35,116 @@ namespace Wheel_of_Azure_UI.ViewModels
         public string GuessedLetter 
         {
             get { return _guessedLetter; }
-            set { _guessedLetter = value; }
+            set {
+                _guessedLetter = value;
+                NotifyOfPropertyChange(() => GuessedLetter);
+            }
         }
+
+        private string _scoreText;
+
+        public string ScoreText
+        {
+            get { return _scoreText; }
+            set {
+                _scoreText = value;
+                NotifyOfPropertyChange(() => ScoreText);
+            }
+        }
+
+        private string _wheelText;
+
+        public string WheelText
+        {
+            get { return _wheelText; }
+            set
+            {
+                _wheelText = value;
+                NotifyOfPropertyChange(() => WheelText);
+            }
+        }
+
+        private bool _guessButtonEnabled;
+
+        public bool GuessButtonEnabled
+        {
+            get { return _guessButtonEnabled; }
+            set
+            {
+                _guessButtonEnabled = value;
+                NotifyOfPropertyChange(() => GuessButtonEnabled);
+            }
+        }
+
+        private bool _spinButtonEnabled;
+
+        public bool SpinButtonEnabled
+        {
+            get { return _spinButtonEnabled; }
+            set
+            {
+                _spinButtonEnabled = value;
+                NotifyOfPropertyChange(() => SpinButtonEnabled);
+            }
+        }
+
 
 
         public GameViewModel()
         {
             Debug.WriteLine(myBoard.GetBoardString());
             PhraseText = myBoard.GetBoardString();
+            playerOne = new Player("Player One");
+            WheelText = "Wheel: ";
+            ScoreText = $"Score: ${playerOne.TurnScore} ";
+            GuessButtonEnabled = false;
+            SpinButtonEnabled = true;
+            wrongSound =
+                new System.Media.SoundPlayer(@"C:\Users\v-deree\Projects\azureRefactor\Wheel of Azure\Wheel of Azure UI\Sounds\wrong.wav");
         }
-
         public void SubmitGuess()
         {
             Debug.WriteLine(GuessedLetter);
-            myBoard.MakeGuess(1, char.Parse(GuessedLetter));
+            int pointsEarned = myBoard.MakeGuess(wheelAmount, char.Parse(GuessedLetter));
+            if(pointsEarned > 0)
+            {
+                playerOne.AddCurrentScore(pointsEarned);
+            } else
+            {
+                wrongSound.Play();
+            }
             PhraseText = myBoard.GetBoardString();
+            ScoreText = $"Score: ${playerOne.TurnScore} ";
+            GuessedLetter = "";
+            GuessButtonEnabled = false;
+            SpinButtonEnabled = true;
+            if(myBoard.IsGameOver())
+            {
+                PhraseText = "You win!!!!";
+                GuessButtonEnabled = false;
+                SpinButtonEnabled = false;
+            }
+        }
+
+        public void HandleSpinClick()
+        {
+            Spin(playerOne);
+            GuessButtonEnabled = true;
+            SpinButtonEnabled = false;
+        }
+
+        public void Spin(Player player)
+        {
+            wheelAmount = wheel.WheelSpin();
+
+            if(wheelAmount > 0)
+            {
+                WheelText = $"Wheel: ${wheelAmount}";
+            } else
+            {
+                WheelText = $"Wheel: BANKRUPTCY";
+                playerOne.AddCurrentScore(-1 * playerOne.TurnScore);
+            }  
         }
     }
 }
