@@ -16,13 +16,14 @@ using System.Windows.Shapes;
 namespace Wheel_of_Azure_UI.Views
 {
     /// <summary>
-    /// Interaction logic for StartView.xaml
+    /// Interaction logic for GameView.xaml
     /// </summary>
-    public partial class StartView : UserControl
+    public partial class GameView : UserControl
     {
-        public StartView()
+        public GameView()
         {
             InitializeComponent();
         }
+
     }
 }

@@ -71,13 +71,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Compile Include="ViewModels\StartViewModel.cs" />
+    <Compile Include="Views\GameView.xaml.cs">
+      <DependentUpon>GameView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\StartView.xaml.cs">
-      <DependentUpon>StartView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -112,11 +112,11 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Views\ShellView.xaml">
+    <Page Include="Views\GameView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\StartView.xaml">
+    <Page Include="Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -124,6 +124,12 @@
   <ItemGroup>
     <Resource Include="Images\logo.png" />
     <Content Include="Sounds\theme.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Wheel of Azure\Wheel of Azure.csproj">
+      <Project>{C2FA5788-126C-47ED-8380-DB559BF90B2C}</Project>
+      <Name>Wheel of Azure</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
