@@ -11,10 +11,10 @@ A new and improved Wheel of Azure console app!
 
 ## Authors
 
-* **Denzale Reeze** - *Windows Presentation Foundation, Caliburn Micro framework and general policies - [denzalereese](https://github.com/denzalereese)
-* **Diane Kato** - *Multi-player feature Color, wheel spining, winner flashing and cool UI features, moq tests & other associated tests* - [dnkato](https://github.com/dnkato)
+* **Denzale Reeze** - *Windows Presentation Foundation, Caliburn Micro framework and general policies* - [denzalereese](https://github.com/denzalereese)
+* **Diane Kato** - *Multi-player, color, wheel spining, winner flashing,cool UI features & associated tests* - [dnkato](https://github.com/dnkato)
 * **Du Tram** - *Random category feature, bug fixes* - [dtram52](https://github.com/dtram52)
-* **Lisette Hamilton** - *Bankrupt and buy vowels feature, presentation* - [lphamilton](https://github.com/lphamilton)
+* **Lisette Hamilton** - *Bankrupt and buy vowels features & associated tests* - [lphamilton](https://github.com/lphamilton)
 
 ## Acknowledgments
 
