@@ -27,13 +27,13 @@
                 Content="Spin" FontSize="36" FontWeight="Bold" IsEnabled="{Binding Path=SpinButtonEnabled, Mode=OneWay}"/>
         
         <!-- Row 2 -->
-        <TextBlock Grid.Row="2" Grid.Column="1" FontSize="36" FontWeight="Bold"
+        <TextBlock Grid.Row="2" Grid.Column="1" FontSize="36" FontWeight="Bold" Foreground="#E040FB"
                    HorizontalAlignment="Center" Text="{Binding Path=WheelText, Mode=OneWay}"/>
         <TextBox x:Name="GuessedLetter" Grid.Row="2" Grid.Column="2" MaxLength="1" IsEnabled="{Binding Path=GuessButtonEnabled, Mode=OneWay}"
                  Width="100" Height="50" FontSize="36" FontWeight="Bold" TextAlignment="Center"/>
 
         <!-- Row 3 -->
-        <TextBlock Grid.Row="3" Grid.Column="1" FontSize="36" FontWeight="Bold"
+        <TextBlock Grid.Row="3" Grid.Column="1" FontSize="36" FontWeight="Bold" Foreground="#4CAF50"
                    HorizontalAlignment="Center" Text="{Binding Path=ScoreText, Mode=OneWay}"/>
         <Button x:Name="SubmitGuess" Grid.Row="3" Grid.Column="2" Width="200" Height="100" Background="#03A9F4"
                 Content="Guess" FontSize="36" FontWeight="Bold" IsEnabled="{Binding Path=GuessButtonEnabled, Mode=OneWay}"/>

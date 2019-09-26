@@ -12,11 +12,12 @@ namespace Wheel_of_Azure_UI.ViewModels
 {
     public class GameViewModel: Screen
     {
-        PhraseBoard myBoard = new PhraseBoard("leap");
+        PhraseBoard myBoard = new PhraseBoard("azure");
         Player playerOne;
         Wheel wheel = new Wheel();
         int wheelAmount;
-        System.Media.SoundPlayer wrongSound;
+        System.Media.SoundPlayer themeSound;
+        System.Media.SoundPlayer winSound;
 
         private string _phraseText;
 
@@ -99,20 +100,30 @@ namespace Wheel_of_Azure_UI.ViewModels
             ScoreText = $"Score: ${playerOne.TurnScore} ";
             GuessButtonEnabled = false;
             SpinButtonEnabled = true;
-            wrongSound =
-                new System.Media.SoundPlayer(@"C:\Users\v-deree\Projects\azureRefactor\Wheel of Azure\Wheel of Azure UI\Sounds\wrong.wav");
+            themeSound =
+                new System.Media.SoundPlayer(@"C:\Users\v-deree\Projects\azureRefactor\Wheel of Azure\Wheel of Azure UI\Sounds\theme.wav");
+            winSound =
+               new System.Media.SoundPlayer(@"C:\Users\v-deree\Projects\azureRefactor\Wheel of Azure\Wheel of Azure UI\Sounds\win.wav");
+            themeSound.Play();
         }
         public void SubmitGuess()
         {
             Debug.WriteLine(GuessedLetter);
-            int pointsEarned = myBoard.MakeGuess(wheelAmount, char.Parse(GuessedLetter));
+            int pointsEarned = 0;
+            try
+            {
+                pointsEarned = myBoard.MakeGuess(wheelAmount, char.Parse(GuessedLetter));
+            } catch (Exception e)
+            {
+                string msgText = "Please enter a guess";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBox.Show(msgText, "Wheel of Azure", button);
+            }
+
             if(pointsEarned > 0)
             {
                 playerOne.AddCurrentScore(pointsEarned);
-            } else
-            {
-                wrongSound.Play();
-            }
+            } 
             PhraseText = myBoard.GetBoardString();
             ScoreText = $"Score: ${playerOne.TurnScore} ";
             GuessedLetter = "";
@@ -120,7 +131,8 @@ namespace Wheel_of_Azure_UI.ViewModels
             SpinButtonEnabled = true;
             if(myBoard.IsGameOver())
             {
-                PhraseText = "You win!!!!";
+                WheelText = "You win!!!!";
+                winSound.Play();
                 GuessButtonEnabled = false;
                 SpinButtonEnabled = false;
             }
@@ -144,6 +156,7 @@ namespace Wheel_of_Azure_UI.ViewModels
             {
                 WheelText = $"Wheel: BANKRUPTCY";
                 playerOne.AddCurrentScore(-1 * playerOne.TurnScore);
+                ScoreText = $"Score: ${playerOne.TurnScore} ";
             }  
         }
     }
