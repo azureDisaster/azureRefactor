@@ -1,7 +1,7 @@
 [![Build Status](https://dev.azure.com/AzureRefactor/Wheel%20of%20Fortune/_apis/build/status/azureDisaster.azureRefactor?branchName=master)](https://dev.azure.com/AzureRefactor/Wheel%20of%20Fortune/_build/latest?definitionId=1&branchName=master)
 
 # Wheel of Fortune
-A new and improved Wheel of Azure console app!
+A new and improved Wheel of Azure console app (with optional UI)!
 <ul>
 <li>Multi-player mode (say goodbye to loneliness!) </li>
 <li>User may go bankrupt</li>
