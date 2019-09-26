@@ -18,6 +18,7 @@ namespace Wheel_of_Azure_UI.ViewModels
         int wheelAmount;
         System.Media.SoundPlayer themeSound;
         System.Media.SoundPlayer winSound;
+        bool bankrupt = false;
 
         private string _phraseText;
 
@@ -141,8 +142,12 @@ namespace Wheel_of_Azure_UI.ViewModels
         public void HandleSpinClick()
         {
             Spin(playerOne);
-            GuessButtonEnabled = true;
-            SpinButtonEnabled = false;
+            if(!bankrupt)
+            {
+                GuessButtonEnabled = true;
+                SpinButtonEnabled = false;
+            }
+            
         }
 
         public void Spin(Player player)
@@ -151,12 +156,14 @@ namespace Wheel_of_Azure_UI.ViewModels
 
             if(wheelAmount > 0)
             {
+                bankrupt = false;
                 WheelText = $"Wheel: ${wheelAmount}";
             } else
             {
                 WheelText = $"Wheel: BANKRUPTCY";
                 playerOne.AddCurrentScore(-1 * playerOne.TurnScore);
                 ScoreText = $"Score: ${playerOne.TurnScore} ";
+                bankrupt = true;
             }  
         }
     }
