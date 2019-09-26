@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Threading;
 using System.Diagnostics.CodeAnalysis;
+using System.ComponentModel;
 
 namespace Wheel_of_Azure
 {
@@ -15,22 +16,40 @@ namespace Wheel_of_Azure
     /// </summary>
     public class GameUI
     {
+
         /// <summary>
-        /// Prompts player to enter their name and returns the value entered.
+        /// Prompts user to input the number of players and enter their names. Returns the list of player names.
         /// </summary>
-        /// <returns>a string containing the player's name.</returns>
-        internal string GetPlayerName()
+        /// <returns>A string list containing the player names.</returns>
+        public List<string> GetPlayerNames()
         {
-            Console.Write("Please enter your name: ");
-            string name = Console.ReadLine();
-            return name;
+            bool valid = false;
+            int totalPlayers;
+            List<string> names = new List<string>();
+
+            do
+            {
+                Console.Write("How many players? ");
+                string input = Console.ReadLine();
+                valid = Int32.TryParse(input, out totalPlayers) && totalPlayers >= 1 ? Int32.TryParse(input, out totalPlayers) : false;
+            } while (!valid);
+
+
+            for (int i = 0; i < totalPlayers; i++)
+            {
+                Console.Write("Please enter player {0}'s name: ", i + 1);
+                string name = Console.ReadLine();
+                names.Add((name == "") ? "Player " + (i + 1) : name);
+            }
+            return names;
         }
+
 
         /// <summary>
         /// Prompts the player to indicate whether they want to Spin(1) or Solve(2).
         /// </summary>
         /// <returns>1 if players wishes to spin, 2 if the player wishes to solve.</returns>
-        internal int GetUserChoice()
+        public int GetUserChoice()
         {
             bool isNumeric = false;
             int userChoice;
@@ -47,7 +66,7 @@ namespace Wheel_of_Azure
         /// Prompts user to press a key so that the console remains displayed until the user wishes to exit.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        internal void GetExit()
+        public void GetExit()
         {
             Console.Write("\nPress any key to exit: ");
 
@@ -72,13 +91,14 @@ namespace Wheel_of_Azure
         /// Prompts the player to guess a letter and returns the response as a char. If the input is invalid or a previously guessed letter, the player is prompted again.
         /// </summary>
         /// <param name="phraseBoard">The current PhraseBoard being guessed.</param>
-        /// <returns>The letter the player has guessed.</returns>
-        internal char GetSpinGuessLetter(PhraseBoard phraseBoard)
+        /// <returns>The letter the player has guessed as a character</returns>
+        public char GetSpinGuessLetter(PhraseBoard phraseBoard, Player player)
         {
             Console.Write("Guess a letter: ");
             string spinGuess = Console.ReadLine().ToLower();
+            HashSet<char> vowels = new HashSet<char> {'a', 'e', 'i', 'o','u'};
 
-            char spinGuessLetter = SingleLettersOnly(spinGuess); ;
+            char spinGuessLetter = SingleLettersOnly(spinGuess);
 
             //If the character has already been guessed, then it will prompt the user to type in one that has not.
             while (phraseBoard.HasGuessed(spinGuessLetter))
@@ -86,8 +106,33 @@ namespace Wheel_of_Azure
                 Console.Write($"{spinGuessLetter} has already been guessed. Guess again: ");
                 spinGuess = Console.ReadLine().ToLower();
 
-                spinGuessLetter = SingleLettersOnly(spinGuess); ;
+                spinGuessLetter = SingleLettersOnly(spinGuess);
             }
+
+            //If the character is a vowel, it will let user know the price and their total after purchasing
+            //If they cannot afford a vowel, they will be told and given the option to guess a consonant 
+            
+            if(vowels.Contains(spinGuessLetter))
+            {
+                Console.WriteLine($"The price of a vowel is ${PhraseBoard.PointsToBuyAVowel}.");
+                if (player.TurnScore >= PhraseBoard.PointsToBuyAVowel)
+                {
+                    player.DeductCurrentScore(PhraseBoard.PointsToBuyAVowel);
+                    Console.WriteLine("You've just bought the letter {0} and your total score is: ${1}", spinGuessLetter.ToString(), player.TurnScore);
+                } else
+                {
+                    bool isConsonant = false;
+                  
+
+                    while (!isConsonant)
+                    {
+                        Console.WriteLine("Looks like you're too broke to buy a vowel. Try guessing a consonant instead.");
+                        spinGuessLetter = SingleLettersOnly(Console.ReadLine());
+                        isConsonant = !vowels.Contains(spinGuessLetter);
+                    }       
+                }
+            }
+
             return spinGuessLetter;
 
         }
@@ -96,7 +141,7 @@ namespace Wheel_of_Azure
         /// Prompts the player to solve the phrase and returns the response as a string.
         /// </summary>
         /// <returns>The player's guess for the phrase.</returns>
-        internal string GetSolveGuess()
+        public string GetSolveGuess()
         {
             Console.Write("Solve the phrase: ");
             string solveGuess = Console.ReadLine().ToLower();
@@ -107,9 +152,38 @@ namespace Wheel_of_Azure
         /// Displays a friendly greeting to the player.
         /// </summary>
         /// <param name="playerOne">The player.</param>
-        internal void DisplayWelcomeMessage(Player playerOne)
+        internal void DisplayWelcomeMessage(List<Player> players)
         {
-            Console.WriteLine($"Welcome to Wheel of Azure {playerOne.Name}!");
+            if (players.Count == 1)
+            {
+                Console.WriteLine($"\nWelcome to Wheel of Azure {players[0].Name}!");
+            }
+            else
+            {
+                string playersString = String.Join(", ", players.Take(players.Count - 1).Select(p => p.Name))
+                                       + " and " + players[players.Count - 1].Name;
+                Console.WriteLine($"\nWelcome to the Wheel of Azure {playersString}!");
+
+            }
+            Console.WriteLine();
+        }
+        /// <summary>
+        /// Displays a randomly assigned category.
+        /// </summary>
+        /// <param name="catphrase"></param>
+        internal void DisplayCat(ICategorizedPhrases catphrase)
+        {
+           
+            Console.WriteLine($"\n Your category today will be >>{catphrase.category}<< !!!\n");
+
+        }
+        /// <summary>
+        /// Displays a message indicating the current player's turn.
+        /// </summary>
+        /// <param name="playerOne"></param>
+        internal void DisplayPlayerTurn(Player playerOne)
+        {
+            Console.WriteLine($"\n{playerOne.Name}, it's now your turn!!! You have ${playerOne.TurnScore}...\n");
         }
 
         /// <summary>
@@ -118,26 +192,52 @@ namespace Wheel_of_Azure
         /// <param name="playerOne">The current player.</param>
         internal void DisplayPlayerScore(Player playerOne)
         {
-            Console.WriteLine($"Total Score: ${playerOne.TurnScore} ");
+            Console.WriteLine($"\nTotal Score: ${playerOne.TurnScore} ");
         }
 
         /// <summary>
         ///  Displays the phrase board. Unsolved letters are displayed as asterisks.
         /// </summary>
         /// <param name="board">The PhraseBoard to be displayed.</param>
+        [ExcludeFromCodeCoverage]
+        internal void DisplayBoardSimple(PhraseBoard board)
+        {
+            Console.WriteLine("\n" + board.GetBoardString() + "\n");
+        }
+
         internal void DisplayBoard(PhraseBoard board)
         {
-            Console.WriteLine(board.GetBoardString());
+            var chars = board.GetBoardString();
+
+            string topAndBottom = "+" + String.Join("+", chars.Select(c => (c == ' ') ? "   " : "---").ToArray()) + "+";
+            string middle = "|" + String.Join("|", chars.Select(c => (c == '*') ? "   " : " " + c + " ").ToArray()) + "|";
+            Console.WriteLine();
+            Console.WriteLine(topAndBottom);
+            Console.WriteLine(middle);
+            Console.WriteLine(topAndBottom);
+            Console.WriteLine();
         }
+
 
         /// <summary>
         /// Displays a congratulatory message to the winner.
         /// </summary>
         /// <param name="playerOne">The winning player.</param>
-        internal void DisplayWinner(Player playerOne)
+        internal void DisplayWinner(List<Player> players, int roundWinner)
         {
-            Console.WriteLine("You win!");
+            string message;
+            if (players.Count == 1)
+                message = "You win!";
+            else
+                message = $"{players[roundWinner].Name} wins the round and ${players[roundWinner].TurnScore}!!!";
+
+            Console.WriteLine();
+            if (!Console.IsOutputRedirected)
+                DisplayBlinkingMessage(message);
+            else
+                Console.WriteLine(message);
         }
+
 
         /// <summary>
         /// Displays the amount resulting from spinning the wheel.
@@ -145,7 +245,24 @@ namespace Wheel_of_Azure
         /// <param name="wheelAmount"></param>
         internal void DisplayWheelAmount(int wheelAmount)
         {
-            Console.WriteLine($"The wheel landed at ${wheelAmount}");
+            if (!Console.IsOutputRedirected) DisplaySpinner();
+
+            string wheelValue;
+
+            switch (wheelAmount)
+            {
+                case Wheel.LoseATurn:
+                    wheelValue = "LOSE A TURN. You Lose your turn!";
+                    break;
+                case Wheel.Bankruptcy:
+                    wheelValue = "BANKRUPT. You lose all your money!";
+                    break;
+                default:
+                    wheelValue = $"${wheelAmount}.";
+                    break;
+            }
+
+            Console.WriteLine($"The wheel landed at {wheelValue}");
         }
 
         /// <summary>
@@ -168,20 +285,21 @@ namespace Wheel_of_Azure
         }
 
         /// <summary>
-        /// Displays a message indicating that the player's spin landed on "Lose A Turn".
-        /// </summary>
-        internal void DisplayLoseTurn()
-        {
-            Console.WriteLine("Sorry, you lose a turn");
-        }
-
-        /// <summary>
         /// Displays a message indicating that the attempt to solve the puzzle was unsuccessful.
         /// </summary>
         /// <param name="solveGuess"></param>
         internal void DisplaySolveGuessFailure(string solveGuess)
         {
             Console.WriteLine($"The phrase is not {solveGuess}. Please try again");
+        }
+
+        /// <summary>
+        /// Displays a message announcing that the player's attempt to solve the puzzle was successful.
+        /// </summary>
+        /// <param name="solveGuess"></param>
+        internal void DisplaySolveGuessSuccess(string solveGuess)
+        {
+            Console.WriteLine($"You are correct! The answer is {solveGuess}. You win ${PhraseBoard.PointsEarnedForSolving} for solving the puzzle.");
         }
 
         /// <summary>
@@ -197,6 +315,76 @@ namespace Wheel_of_Azure
                 spinGuess = Console.ReadLine().ToLower();
             }
             return spinGuess[0];
+        }
+        /// <summary>
+        /// Sets the text color to a different color for each player
+        /// </summary>
+        /// <param name="playerNumber"></param>
+        public void SetPlayerTextColor(int playerNumber)
+        {
+            switch (playerNumber % 4)
+            {
+                case 0: Console.ForegroundColor = ConsoleColor.Cyan; break;
+                case 1: Console.ForegroundColor = ConsoleColor.Yellow; break;
+                case 2: Console.ForegroundColor = ConsoleColor.Green; break;
+                default: Console.ForegroundColor = ConsoleColor.Magenta; break;
+            }
+        }
+        /// <summary>
+        /// Resets the text color to white
+        /// </summary>
+        public void ResetTextColorToWhite()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        /// <summary>
+        /// Displays a spinning console animation
+        /// </summary>
+        /// <param name="iterations">The number of times the spinning character is rotated</param>
+        /// <param name="delay">time in milliseconds between displaying the character</param>
+        [ExcludeFromCodeCoverage]
+        public void DisplaySpinner(int iterations = 20, int delay = 30)
+        {
+            for (int counter = 0; counter < iterations; counter++)
+            {
+                switch (counter % 4)
+                {
+                    case 0: Console.Write("/"); break;
+                    case 1: Console.Write("-"); break;
+                    case 2: Console.Write("\\"); break;
+                    case 3: Console.Write("|"); break;
+                }
+                Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
+                Thread.Sleep(delay);
+            }
+        }
+
+        /// <summary>
+        /// Displays a blinking message
+        /// </summary>
+        /// <param name="message">The message to be displayed</param>
+        /// <param name="iterations">The number of blinking iterations</param>
+        /// <param name="delay">the time in milliseconds between each blink</param>
+        [ExcludeFromCodeCoverage]
+        public void DisplayBlinkingMessage(string message, int iterations = 10, int delay = 100)
+        {
+            string blank = new string(message.ToCharArray().Select(c => ' ').ToArray());
+            for (int counter = 0; counter < iterations; counter++)
+            {
+                switch (counter % 2)
+                {
+                    case 0:
+                        Console.Write(message);
+                        break;
+                    case 1:
+                        Console.Write(blank);
+                        break;
+                }
+                Console.SetCursorPosition(Console.CursorLeft - message.Length, Console.CursorTop);
+                Thread.Sleep(delay);
+            }
+            Console.WriteLine(message);
         }
 
     }
