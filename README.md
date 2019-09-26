@@ -9,8 +9,6 @@ A new and improved Wheel of Azure console app!
 <li>Random category and phrases generated from the assigned category</li>
 </ul>
 
-```
-
 ## Authors
 
 * **Denzale Reeze** - *Windows Presentation Foundation, Caliburn Micro framework and general policies - [denzalereese](https://github.com/denzalereese)
